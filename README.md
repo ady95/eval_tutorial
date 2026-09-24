@@ -29,6 +29,7 @@ python -m ch01.check_env
 | `ch04/` | 04장 Judge를 믿어도 되는가 (편향 실험, 사람 라벨 비교, 로컬 Judge) |
 | `ch05/` | 05장 RAG 평가의 구조 (평가용 RAG, 검색 지표, Faithfulness) |
 | `ch06/` | 06장 RAGAS로 RAG 평가하고 개선하기 (추가 설치: `pip install "ragas==0.4.3" "langchain-community==0.4.1"`, Reranker는 `torch`·`sentence-transformers`) |
+| `ch07/` | 07장 DeepEval로 LLM 테스트하기 (추가 설치: `pip install "deepeval==4.2.5"`, Windows는 `pip install "portalocker[win32]"`도 필요. `.env`에 `DEEPEVAL_TELEMETRY_OPT_OUT=YES`) |
 | `data/` | 05장부터 쓰는 공통 실습 데이터: 가상 회사 누리솔 사내 규정 23개(`docs/`), 평가셋 42문항(`eval_set.json`) |
 
 장이 진행되면서 폴더가 추가됩니다.
