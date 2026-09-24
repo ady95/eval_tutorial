@@ -19,3 +19,7 @@ results/
 Thumbs.db
 .vscode/
 .idea/
+
+# DeepEval 캐시·실행 기록
+.deepeval/
+.deepeval_telemetry.txt
