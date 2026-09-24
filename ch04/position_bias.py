@@ -4,13 +4,16 @@
 두 순서의 판정이 같은 답변을 가리키는지(일관성) 셉니다.
 
 실행: python -m ch04.position_bias      (먼저 python -m ch03.evaluate_all, python -m ch03.ab_test 실행)
+      python -m ch04.position_bias --local   (04-4: 로컬 Judge)
 """
+import argparse
 import json
 from collections import Counter
 from pathlib import Path
 
 from ch03.ab_test import CRITERION
 from ch03.judges import judge_pairwise
+from ch04.local_judge import add_local_args, apply_local
 
 DATASET = {d["id"]: d for d in json.loads(Path("ch03/qa_dataset.json").read_text(encoding="utf-8"))}
 SWAP = {"A": "B", "B": "A", "TIE": "TIE"}
@@ -23,6 +26,11 @@ def consistency(pairs: list[tuple[str, str]]) -> str:
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    add_local_args(parser)
+    judge_name = apply_local(parser.parse_args())
+    print(f"Judge: {judge_name}\n")
+
     # 1) 03-5 의 정답 vs 부분·오답 비교를 순서만 바꿔 다시 판정
     original = json.loads((Path("results") / "ch03_evaluate_all.json").read_text(encoding="utf-8"))["pairs"]
     results = []
@@ -56,7 +64,7 @@ def main():
     print(f"A/B 테스트: 순서를 바꿔도 같은 판정 {consistency(ab_pairs)}, "
           f"뒤집은 순서에서 프롬프트 B 승률 {(counts['B'] + 0.5 * counts['TIE']) / len(ab_pairs):.2f}")
 
-    out = Path("results") / "ch04_position_bias.json"
+    out = Path("results") / f"ch04_position_bias_{judge_name}.json"
     out.write_text(json.dumps({"pairs": results, "ab": ab_pairs}, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"결과 저장: {out}")
 

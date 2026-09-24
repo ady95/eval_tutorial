@@ -3,6 +3,14 @@ import json
 
 from common.llm import JUDGE_MODEL, client
 
+# Judge 호출 설정. 04-4에서 use_judge()로 로컬 모델로 바꿔 끼웁니다
+JUDGE = {"client": client, "model": JUDGE_MODEL, "options": {}}
+
+
+def use_judge(judge_client, model: str, **options) -> None:
+    """이후 모든 Judge 호출이 이 클라이언트·모델·추가 옵션을 쓰게 합니다."""
+    JUDGE.update(client=judge_client, model=model, options=options)
+
 
 def call_judge(system: str, user: str, required: dict, max_retries: int = 3) -> dict:
     """Judge를 호출하고 JSON 결과를 검증합니다.
@@ -12,10 +20,11 @@ def call_judge(system: str, user: str, required: dict, max_retries: int = 3) -> 
     """
     last_error = ""
     for attempt in range(1, max_retries + 1):
-        response = client.chat.completions.create(
-            model=JUDGE_MODEL,
+        response = JUDGE["client"].chat.completions.create(
+            model=JUDGE["model"],
             messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
             response_format={"type": "json_object"},
+            **JUDGE["options"],
         )
         text = response.choices[0].message.content or ""
         try:
