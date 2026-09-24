@@ -5,6 +5,7 @@
 
 실행: python -m ch04.verbosity_bias                    (정확성 기준)
       python -m ch04.verbosity_bias --criterion help    (03-4의 "도움이 되게" 기준)
+      python -m ch04.verbosity_bias --local             (04-4: 로컬 Judge)
 """
 import argparse
 import json
@@ -13,6 +14,7 @@ from pathlib import Path
 
 from ch03.ab_test import CRITERION as HELP_CRITERION
 from ch03.judges import ACCURACY_CRITERION, judge_pairwise, judge_score
+from ch04.local_judge import add_local_args, apply_local
 
 DATASET = json.loads(Path("ch03/qa_dataset.json").read_text(encoding="utf-8"))
 SWAP = {"A": "B", "B": "A", "TIE": "TIE"}
@@ -28,7 +30,9 @@ def pad(text: str) -> str:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--criterion", choices=["accuracy", "help"], default="accuracy")
+    add_local_args(parser)
     args = parser.parse_args()
+    judge_name = apply_local(args)
     criterion = HELP_CRITERION if args.criterion == "help" else ACCURACY_CRITERION
     print(f"평가 기준: {criterion}\n")
 
@@ -55,7 +59,8 @@ def main():
     lower = sum(l < s for s, l in score_diff if s and l)
     print(f"점수: 긴 답이 더 높음 {higher} / 더 낮음 {lower} / 같음 {len(score_diff) - higher - lower}")
 
-    out = Path("results") / f"ch04_verbosity_bias_{args.criterion}.json"
+    suffix = f"_{judge_name}" if args.local else ""
+    out = Path("results") / f"ch04_verbosity_bias_{args.criterion}{suffix}.json"
     out.write_text(json.dumps({"winners": winners, "scores": score_diff}, ensure_ascii=False, indent=2),
                    encoding="utf-8")
     print(f"결과 저장: {out}")

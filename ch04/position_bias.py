@@ -28,11 +28,18 @@ def consistency(pairs: list[tuple[str, str]]) -> str:
 def main():
     parser = argparse.ArgumentParser()
     add_local_args(parser)
-    judge_name = apply_local(parser.parse_args())
+    args = parser.parse_args()
+    judge_name = apply_local(args)
     print(f"Judge: {judge_name}\n")
 
     # 1) 03-5 의 정답 vs 부분·오답 비교를 순서만 바꿔 다시 판정
     original = json.loads((Path("results") / "ch03_evaluate_all.json").read_text(encoding="utf-8"))["pairs"]
+    if args.local:
+        # 03장 결과는 API Judge의 판정이므로, 로컬 Judge는 원래 순서 판정도 직접 다시 냅니다
+        for p in original:
+            item = DATASET[p["id"]]
+            text = {a["label"]: a["text"] for a in item["answers"]}
+            p["winner"] = judge_pairwise(item["question"], text["정답"], text[p["rival"]], item["reference"]).get("winner")
     results = []
     for p in original:
         item = DATASET[p["id"]]
@@ -56,13 +63,17 @@ def main():
     ab_pairs = []
     for r in ab:
         ref = next(d["reference"] for d in DATASET.values() if d["question"] == r["question"])
+        if args.local:  # 원래 순서(프롬프트 B 답변이 두 번째) 판정도 로컬 Judge로 다시 냅니다
+            r["winner"] = judge_pairwise(r["question"], r["a"], r["b"], ref, criterion=CRITERION).get("winner")
         verdict = judge_pairwise(r["question"], r["b"], r["a"], ref, criterion=CRITERION)  # B 답변을 A 자리에
         swapped = SWAP.get(verdict.get("winner"), "오류")
         ab_pairs.append((r["winner"], swapped))
         print(f"  [{r['winner']:>3} / {swapped:>3}] {r['question']}")
     counts = Counter(s for _, s in ab_pairs)
+    first = Counter(o for o, _ in ab_pairs)
     print(f"A/B 테스트: 순서를 바꿔도 같은 판정 {consistency(ab_pairs)}, "
           f"뒤집은 순서에서 프롬프트 B 승률 {(counts['B'] + 0.5 * counts['TIE']) / len(ab_pairs):.2f}")
+    print(f"           원래 순서에서 프롬프트 B 승률 {(first['B'] + 0.5 * first['TIE']) / len(ab_pairs):.2f}")
 
     out = Path("results") / f"ch04_position_bias_{judge_name}.json"
     out.write_text(json.dumps({"pairs": results, "ab": ab_pairs}, ensure_ascii=False, indent=2), encoding="utf-8")
