@@ -26,5 +26,8 @@ python -m ch01.check_env
 | `ch01/` | 01장 생성형 AI 평가는 무엇이 다른가 |
 | `ch02/` | 02장 전통적인 지표와 그 한계 (추가 설치: `pip install sacrebleu rouge-score numpy`, 임베딩 서버 필요) |
 | `ch03/` | 03장 LLM-as-a-Judge 직접 만들기 (PASS/FAIL, Rubric 점수, Pairwise Judge) |
+| `ch04/` | 04장 Judge를 믿어도 되는가 (편향 실험, 사람 라벨 비교, 로컬 Judge) |
+| `ch05/` | 05장 RAG 평가의 구조 (평가용 RAG, 검색 지표, Faithfulness) |
+| `data/` | 05장부터 쓰는 공통 실습 데이터: 가상 회사 누리솔 사내 규정 23개(`docs/`), 평가셋 42문항(`eval_set.json`) |
 
 장이 진행되면서 폴더가 추가됩니다.
