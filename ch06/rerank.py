@@ -4,6 +4,8 @@
               pip install sentence-transformers
 처음 실행할 때 모델(BAAI/bge-reranker-v2-m3, 약 2GB)을 내려받습니다.
 """
+from operator import itemgetter
+
 from sentence_transformers import CrossEncoder
 
 MODEL_NAME = "BAAI/bge-reranker-v2-m3"
@@ -16,5 +18,5 @@ def rerank(question: str, hits: list, top_k: int) -> list:
     if _model is None:
         _model = CrossEncoder(MODEL_NAME)
     scores = _model.predict([(question, chunk.text) for chunk, _ in hits])
-    ranked = sorted(zip(hits, scores), key=lambda x: -x[1])
+    ranked = sorted(zip(hits, scores), key=itemgetter(1), reverse=True)
     return [(chunk, float(score)) for (chunk, _), score in ranked[:top_k]]
