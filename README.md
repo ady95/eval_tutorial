@@ -31,6 +31,7 @@ python -m ch01.check_env
 | `ch06/` | 06장 RAGAS로 RAG 평가하고 개선하기 (추가 설치: `pip install "ragas==0.4.3" "langchain-community==0.4.1"`, Reranker는 `torch`·`sentence-transformers`) |
 | `ch07/` | 07장 DeepEval로 LLM 테스트하기 (추가 설치: `pip install "deepeval==4.2.5"`, Windows는 `pip install "portalocker[win32]"`도 필요. `.env`에 `DEEPEVAL_TELEMETRY_OPT_OUT=YES`) |
 | `ch08/` | 08장 Agent 평가 (도구 3종 Agent와 Trace, 도구·경로·계획 지표, DeepEval Agent 지표) |
+| `ch09/` | 09장 Evaluation Engineering (합성 평가셋, 회귀 평가와 배포 게이트, 실패 분류, 품질·비용·지연 비교). CI 예시는 `.github/workflows/llm-eval.yml` (수동 실행 전용) |
 | `data/` | 05장부터 쓰는 공통 실습 데이터: 가상 회사 누리솔 사내 규정 23개(`docs/`), 평가셋 42문항(`eval_set.json`), Agent 평가 과제 20개(`agent_tasks.json`), 가상 날씨 예보(`weather.json`) |
 
 장이 진행되면서 폴더가 추가됩니다.
