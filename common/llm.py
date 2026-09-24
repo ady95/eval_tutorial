@@ -27,3 +27,17 @@ def chat(prompt: str, model: str = MODEL, **kwargs) -> str:
         **kwargs,
     )
     return response.choices[0].message.content
+
+
+# 임베딩은 대화 모델과 다른 서버(예: Ollama의 bge-m3)를 쓸 수 있도록 설정을 따로 둡니다
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL") or "bge-m3"
+embed_client = OpenAI(
+    base_url=os.getenv("EMBEDDING_BASE_URL") or str(client.base_url),
+    api_key=os.getenv("EMBEDDING_API_KEY") or client.api_key,
+)
+
+
+def embed(texts: list[str]) -> list[list[float]]:
+    """문장 목록을 임베딩 벡터 목록으로 바꿉니다."""
+    response = embed_client.embeddings.create(model=EMBEDDING_MODEL, input=texts)
+    return [item.embedding for item in response.data]

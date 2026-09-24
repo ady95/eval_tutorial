@@ -24,5 +24,6 @@ python -m ch01.check_env
 |---|---|
 | `common/` | 모든 장이 함께 쓰는 LLM 호출 도구 |
 | `ch01/` | 01장 생성형 AI 평가는 무엇이 다른가 |
+| `ch02/` | 02장 전통적인 지표와 그 한계 (추가 설치: `pip install sacrebleu rouge-score numpy`, 임베딩 서버 필요) |
 
 장이 진행되면서 폴더가 추가됩니다.
