@@ -1,0 +1,21 @@
+# API 키가 들어 있는 파일은 절대 커밋하지 않습니다
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# 실행 결과
+results/
+
+# OS / 편집기
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
