@@ -10,7 +10,7 @@ from ch02.metrics import cosine_similarity, f1
 from ch03.judges import judge_binary, judge_pairwise, judge_score
 
 DATASET = json.loads(Path("ch03/qa_dataset.json").read_text(encoding="utf-8"))
-LABEL_TO_PASS = {"정답": "PASS", "부분": "FAIL", "오답": "FAIL"}  # 사람의 판정 기준
+LABEL_TO_PASS = {"정답": "PASS", "부분": "FAIL", "오답": "FAIL"}  # 라벨별로 기대하는 판정
 
 
 def grade_answers() -> list[dict]:
@@ -62,7 +62,7 @@ def main():
 
     print("\n[3] 요약")
     correct = sum(r["binary"] == LABEL_TO_PASS[r["label"]] for r in rows)
-    print(f"PASS/FAIL 판정이 사람 라벨과 일치: {correct}/{len(rows)}")
+    print(f"PASS/FAIL 판정이 라벨과 일치: {correct}/{len(rows)}")
     for label in ["정답", "부분", "오답"]:
         sub = [r for r in rows if r["label"] == label]
         passes = sum(r["binary"] == "PASS" for r in sub)
