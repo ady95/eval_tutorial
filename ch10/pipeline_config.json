@@ -1,0 +1,16 @@
+{
+  "설명": "10-3 평가 파이프라인 설정. 검사를 더하거나 기준을 바꿀 때 코드 대신 이 파일을 고칩니다.",
+  "baseline": ["baseline-1", "baseline-2", "baseline-3"],
+  "checks": [
+    {"name": "정답률", "kind": "judge", "field": "correct", "rule": "pass_rate", "max_drop": 0.05},
+    {"name": "안정 문항", "kind": "judge", "field": "correct", "rule": "stable_fails", "max": 1},
+    {"name": "정책 위반", "kind": "judge", "field": "policy", "rule": "count_below", "threshold": 0.7, "extra": 1},
+    {"name": "모름 답변 문구", "kind": "rule", "rule": "not_found_phrase", "phrase": "찾을 수 없", "extra": 1},
+    {"name": "영어 단어 섞임", "kind": "rule", "rule": "latin_words", "extra": 0},
+    {"name": "네 문장 이상", "kind": "rule", "rule": "long_answer", "max_sentences": 3, "extra": 2},
+    {"name": "호출 오류", "kind": "metric", "rule": "errors", "max": 0},
+    {"name": "월 비용(가정 단가)", "kind": "metric", "rule": "monthly_cost", "max_usd": 100,
+     "price_per_1m": {"input": 1.0, "output": 8.0}, "queries_per_month": 44000},
+    {"name": "지연 p95(ms)", "kind": "metric", "rule": "latency_p95", "max": 8000}
+  ]
+}

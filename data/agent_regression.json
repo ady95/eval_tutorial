@@ -1,0 +1,381 @@
+[
+ {
+  "id": 1,
+  "type": "search",
+  "task": "해외 출장은 며칠 전까지 신청해야 하고, 누구의 승인을 받아야 하나요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "해외 출장 신청 기한 승인"
+    }
+   }
+  ],
+  "expected_result": "출발 14일 전까지 신청하고 팀장, 본부장, 대표이사의 승인을 받아야 합니다."
+ },
+ {
+  "id": 2,
+  "type": "search",
+  "task": "법인카드로 80만 원짜리 장비를 한 번에 결제해도 되나요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "법인카드 1회 결제 한도"
+    }
+   }
+  ],
+  "expected_result": "1회 결제 한도가 50만 원이므로, 80만 원을 결제하려면 재무팀의 사전 승인을 받아야 합니다."
+ },
+ {
+  "id": 3,
+  "type": "search",
+  "task": "반차는 몇 시부터 몇 시까지 쓰는 건가요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "반차 시간"
+    }
+   }
+  ],
+  "expected_result": "반차는 4시간 단위로, 오전(09:00~13:00) 또는 오후(14:00~18:00) 중 하나를 고릅니다."
+ },
+ {
+  "id": 4,
+  "type": "search",
+  "task": "업무 관련 교육의 출석률이 70%였는데 교육비는 얼마나 지원받나요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "교육비 지원 출석률"
+    }
+   }
+  ],
+  "expected_result": "출석률 60% 이상 80% 미만이므로 교육비의 50%를 지원받습니다."
+ },
+ {
+  "id": 5,
+  "type": "search+calc",
+  "task": "대구로 2박 3일 출장을 가면 숙박비 한도와 일비를 합쳐 최대 얼마까지 받을 수 있나요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "국내 출장 숙박비 일비"
+    }
+   },
+   {
+    "name": "calculator",
+    "arguments": {
+     "expression": "100000*2+30000*3"
+    }
+   }
+  ],
+  "expected_value": 290000,
+  "expected_result": "숙박비 1박 10만 원 × 2박 = 20만 원, 일비 3만 원 × 3일 = 9만 원으로 합계 최대 29만 원입니다."
+ },
+ {
+  "id": 6,
+  "type": "search+calc",
+  "task": "미국으로 3박 5일 출장을 가면 일비는 모두 몇 달러인가요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "해외 출장 일비 미국"
+    }
+   },
+   {
+    "name": "calculator",
+    "arguments": {
+     "expression": "80*5"
+    }
+   }
+  ],
+  "expected_value": 400,
+  "expected_result": "미국 출장 일비는 1일 80달러이고 출국일과 귀국일도 포함해 5일이므로 400달러입니다."
+ },
+ {
+  "id": 7,
+  "type": "search+calc",
+  "task": "이번 주에 연장근무를 6시간 했는데, 수당 대신 보상휴가로 받으면 몇 시간인가요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "연장근무 보상휴가"
+    }
+   },
+   {
+    "name": "calculator",
+    "arguments": {
+     "expression": "6*1.5"
+    }
+   }
+  ],
+  "expected_value": 9,
+  "expected_result": "연장근무 1시간당 1.5시간이므로 보상휴가 9시간을 받습니다."
+ },
+ {
+  "id": 8,
+  "type": "search+calc",
+  "task": "자가용으로 왕복 320km 국내 출장을 다녀왔고 통행료로 18,400원을 냈어요. 유류비와 통행료를 합쳐 얼마를 청구할 수 있나요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "자가용 유류비 통행료"
+    }
+   },
+   {
+    "name": "calculator",
+    "arguments": {
+     "expression": "320*250+18400"
+    }
+   }
+  ],
+  "expected_value": 98400,
+  "expected_result": "유류비 320km × 250원 = 80,000원에 통행료 18,400원을 더해 98,400원을 청구할 수 있습니다."
+ },
+ {
+  "id": 9,
+  "type": "search+calc",
+  "task": "올해 4월에 입사한 정규직인데, 올해 복리후생 포인트는 몇 점을 받나요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "복리후생 포인트 연중 입사 월할"
+    }
+   },
+   {
+    "name": "calculator",
+    "arguments": {
+     "expression": "9*100000"
+    }
+   }
+  ],
+  "expected_value": 900000,
+  "expected_result": "입사한 달부터 월 10만 점씩 월할로 받으므로 4월~12월 9개월 × 10만 점 = 90만 점입니다."
+ },
+ {
+  "id": 10,
+  "type": "weather",
+  "task": "내일 부산 날씨 알려 주세요.",
+  "expected_tools": [
+   {
+    "name": "get_weather",
+    "arguments": {
+     "city": "부산",
+     "date": "2026-10-06"
+    }
+   }
+  ],
+  "expected_result": "내일(10월 6일) 부산은 구름 많고 기온 18~24도, 강수확률 20%입니다."
+ },
+ {
+  "id": 11,
+  "type": "weather",
+  "task": "이번 주 금요일에 제주 날씨는 어때요?",
+  "expected_tools": [
+   {
+    "name": "get_weather",
+    "arguments": {
+     "city": "제주",
+     "date": "2026-10-09"
+    }
+   }
+  ],
+  "expected_result": "금요일(10월 9일) 제주는 흐리고 기온 18~23도, 강수확률 30%입니다."
+ },
+ {
+  "id": 12,
+  "type": "weather",
+  "task": "모레 서울에 비가 오나요?",
+  "expected_tools": [
+   {
+    "name": "get_weather",
+    "arguments": {
+     "city": "서울",
+     "date": "2026-10-07"
+    }
+   }
+  ],
+  "expected_result": "모레(10월 7일) 서울은 비 예보이며 강수확률은 80%입니다."
+ },
+ {
+  "id": 13,
+  "type": "weather+search",
+  "task": "내일 대구로 당일 출장을 가는데 비가 오면 택시를 타려고 해요. 내일 대구 날씨와, 출장지에서 택시비를 얼마까지 지원받는지 알려 주세요.",
+  "expected_tools": [
+   {
+    "name": "get_weather",
+    "arguments": {
+     "city": "대구",
+     "date": "2026-10-06"
+    }
+   },
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "출장지 택시비"
+    }
+   }
+  ],
+  "expected_result": "내일(10월 6일) 대구는 비(강수확률 80%)이고, 출장지 안의 택시비는 1일 3만 원까지 실비로 지원됩니다."
+ },
+ {
+  "id": 14,
+  "type": "weather+search",
+  "task": "목요일에 도쿄로 출장을 가요. 그날 도쿄 날씨와 하루 일비가 얼마인지 알려 주세요.",
+  "expected_tools": [
+   {
+    "name": "get_weather",
+    "arguments": {
+     "city": "도쿄",
+     "date": "2026-10-08"
+    }
+   },
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "해외 출장 일비 일본"
+    }
+   }
+  ],
+  "expected_result": "목요일(10월 8일) 도쿄는 맑고 기온 16~25도이며, 일본 출장 일비는 하루 80달러입니다."
+ },
+ {
+  "id": 15,
+  "type": "weather+search+calc",
+  "task": "수요일부터 금요일까지 부산으로 2박 3일 출장을 갑니다. 출발하는 날 부산 날씨와, 숙박비 한도와 일비를 합친 최대 금액을 알려 주세요.",
+  "expected_tools": [
+   {
+    "name": "get_weather",
+    "arguments": {
+     "city": "부산",
+     "date": "2026-10-07"
+    }
+   },
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "국내 출장 숙박비 일비"
+    }
+   },
+   {
+    "name": "calculator",
+    "arguments": {
+     "expression": "120000*2+30000*3"
+    }
+   }
+  ],
+  "expected_value": 330000,
+  "expected_result": "출발일(10월 7일) 부산은 흐리고 오후 비(강수확률 60%)입니다. 숙박비 12만 원 × 2박 = 24만 원, 일비 3만 원 × 3일 = 9만 원으로 최대 33만 원입니다."
+ },
+ {
+  "id": 16,
+  "type": "calc",
+  "task": "출장 영수증이 12,500원, 8,900원, 43,000원이에요. 합계가 얼마인가요?",
+  "expected_tools": [
+   {
+    "name": "calculator",
+    "arguments": {
+     "expression": "12500+8900+43000"
+    }
+   }
+  ],
+  "expected_value": 64400,
+  "expected_result": "합계는 64,400원입니다."
+ },
+ {
+  "id": 17,
+  "type": "calc",
+  "task": "현지에서 쓴 380달러를 환율 1,390원으로 환산하면 얼마인가요?",
+  "expected_tools": [
+   {
+    "name": "calculator",
+    "arguments": {
+     "expression": "380*1390"
+    }
+   }
+  ],
+  "expected_value": 528200,
+  "expected_result": "380달러 × 1,390원 = 528,200원입니다."
+ },
+ {
+  "id": 18,
+  "type": "no-tool",
+  "task": "고마워요, 덕분에 해결했어요!",
+  "expected_tools": [],
+  "expected_result": "도구를 쓰지 않고 짧게 인사로 답합니다."
+ },
+ {
+  "id": 19,
+  "type": "not-found",
+  "task": "명절 상여금은 얼마인가요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "명절 상여금"
+    }
+   }
+  ],
+  "expected_result": "규정에서 찾을 수 없다고 답합니다."
+ },
+ {
+  "id": 20,
+  "type": "not-found",
+  "task": "내일 광주 날씨 알려 주세요.",
+  "expected_tools": [
+   {
+    "name": "get_weather",
+    "arguments": {
+     "city": "광주",
+     "date": "2026-10-06"
+    }
+   }
+  ],
+  "expected_result": "광주는 날씨를 조회할 수 없는 도시라고 안내합니다."
+ },
+ {
+  "id": 30,
+  "type": "search",
+  "task": "오늘 경비 45만 원을 청구하면 누구 승인이 필요하고, 언제 입금되나요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "경비 승인 단계 지급일"
+    }
+   }
+  ],
+  "expected_result": "10만 원 초과 100만 원 이하라 팀장과 본부장 승인이 필요하고, 목요일 18시까지 승인되면 이번 주 금요일(10월 9일)에 급여 계좌로 지급됩니다.",
+  "source": "10-2 운영 과제, 2/3회 실패"
+ },
+ {
+  "id": 32,
+  "type": "search+calc",
+  "task": "근속 11년 차 직원은 연차가 며칠인가요?",
+  "expected_tools": [
+   {
+    "name": "search_document",
+    "arguments": {
+     "query": "연차 근속 가산"
+    }
+   },
+   {
+    "name": "calculator",
+    "arguments": {
+     "expression": "15+5"
+    }
+   }
+  ],
+  "expected_value": 20,
+  "expected_result": "근속 3년 차 16일부터 2년마다 1일씩 늘어 11년 차는 20일입니다.",
+  "source": "10-2 운영 과제, 2/3회 실패"
+ }
+]

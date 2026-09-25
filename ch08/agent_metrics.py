@@ -31,8 +31,9 @@ def argument_check(task: dict, expected: dict, trace: dict) -> bool | str | None
         return any(c["arguments"].get("city") == expected["arguments"]["city"]
                    and c["arguments"].get("date") == expected["arguments"]["date"] for c in calls)
     if expected["name"] == "calculator":  # 식의 모양이 아니라 계산한 값으로 비교합니다
-        return any(calculator(str(c["arguments"].get("expression", ""))) == str(task["expected_value"])
-                   for c in calls)
+        values = task["expected_value"] if isinstance(task["expected_value"], list) else [task["expected_value"]]
+        return any(calculator(str(c["arguments"].get("expression", ""))) in {str(v) for v in values}
+                   for c in calls)  # 맞는 값이 여럿이면(예: 1박 한도와 2박 합계) 목록으로 적습니다
     return "judge"  # search_document 의 검색어는 정답이 하나가 아닙니다 → Judge
 
 
