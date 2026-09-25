@@ -4,6 +4,7 @@ LLM 이 도구를 부르면 실행해 결과를 돌려주고, 도구 없이 답�
 실행 중 일어난 일을 모두 trace 에 남겨 08-3 ~ 08-5 에서 평가합니다.
 """
 import json
+import os
 import time
 
 from ch08.tools import TOOL_SCHEMAS, TOOL_SCHEMAS_V0, TOOLS
@@ -21,6 +22,10 @@ SYSTEM_V0 = "당신은 누리솔 사내 업무 도우미입니다. 필요하면 
 
 VERSIONS = {"v0": (SYSTEM_V0, TOOL_SCHEMAS_V0), "v1": (SYSTEM, TOOL_SCHEMAS)}
 
+# OpenAI 공식 API 의 gpt-6-luna 는 도구 호출을 쓸 때 추론 강도(reasoning_effort)를 none 으로 지정해야 합니다(공식 문서 기준).
+# .env 의 AGENT_REASONING_EFFORT 로 정하고, 이 인자를 받지 않는 모델이면 비워 둡니다.
+AGENT_OPTIONS = {"reasoning_effort": os.environ["AGENT_REASONING_EFFORT"]} if os.getenv("AGENT_REASONING_EFFORT") else {}
+
 
 def elapsed_ms(start: float) -> int:
     return round((time.perf_counter() - start) * 1000)
@@ -28,7 +33,7 @@ def elapsed_ms(start: float) -> int:
 
 def call_llm(messages: list[dict], tool_schemas: list[dict]):
     """LLM 호출. 도구 호출과 함께 함수로 떼어 두면 08-5 에서 관측(tracing)을 붙이기 쉽습니다."""
-    return client.chat.completions.create(model=MODEL, messages=messages, tools=tool_schemas)
+    return client.chat.completions.create(model=MODEL, messages=messages, tools=tool_schemas, **AGENT_OPTIONS)
 
 
 def call_tool(name: str, arguments: str) -> tuple[dict | None, str]:
