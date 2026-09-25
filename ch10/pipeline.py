@@ -94,6 +94,10 @@ for check in config["checks"]:
     else:
         value, base, detail = measure(check, candidate), [measure(check, run) for run in baselines], ""
     passed = judge(check, value, base)
+    if check.get("field", "correct") != "correct":  # 저장된 Judge 점수가 빠진 문항이 있으면 통과로 보지 않습니다
+        missing = sum(r.get(check["field"]) is None for r in candidate if r["correct"] != "ERROR")
+        if missing:
+            passed, detail = False, f"점수 없는 문항 {missing}개"
     results.append({"name": check["name"], "kind": check["kind"], "value": round(value, 3),
                     "baseline": [round(b, 3) for b in base], "passed": passed, "detail": detail})
 

@@ -7,6 +7,7 @@
 """
 import argparse
 import json
+import sys
 from pathlib import Path
 from statistics import median
 
@@ -38,28 +39,40 @@ for q in questions:
         rows.append({**q, "answer": None, "correct": "ERROR", "reason": f"{type(e).__name__}: {e}"})
         continue
     contexts = [c["text"] for c in out["retrieved"]]
-    judged = judge_correct_with_docs(q["question"], out["answer"], q["reference"], contexts)
+    try:
+        judged = judge_correct_with_docs(q["question"], out["answer"], q["reference"], contexts)
+    except Exception as e:  # Judge 호출이 실패해도 문항별 오류로 남기고 계속합니다
+        judged = {"error": f"{type(e).__name__}: {e}"}
     found = {c["doc_id"] for c in out["retrieved"]}
-    rows.append({**q, **out, "correct": judged.get("result", "ERROR"), "reason": judged.get("reason"),
+    rows.append({**q, **out, "correct": judged.get("result", "ERROR"), "reason": judged.get("reason", judged.get("error")),
                  "doc_recall": sum(d in found for d in q["docs"]) / len(q["docs"]) if q["docs"] else None})
     print(f"  {q['id']:2d} {rows[-1]['correct']:<5} {out['search_ms'] + out['rerank_ms'] + out['llm_ms']:6d}ms  {out['answer'][:50]}")
 
 ok = [r for r in rows if r["correct"] != "ERROR"]
-latency = [r["search_ms"] + r["rerank_ms"] + r["llm_ms"] for r in ok]
+latency = sorted(r["search_ms"] + r["rerank_ms"] + r["llm_ms"] for r in ok)
+
+
+def avg(key: str) -> int | None:
+    """정상 행의 평균. 정상 행이 하나도 없으면 None 입니다."""
+    return round(sum(r[key] for r in ok) / len(ok)) if ok else None
+
+
 summary = {
     "config": config.name(), "n": len(rows),
     "pass_rate": round(sum(r["correct"] == "PASS" for r in rows) / len(rows), 3),
     "by_type": {t: round(sum(r["correct"] == "PASS" for r in rows if r["type"] == t)
                          / sum(r["type"] == t for r in rows), 3) for t in sorted({r["type"] for r in rows})},
     "errors": len(rows) - len(ok),
-    "prompt_tokens": round(sum(r["prompt_tokens"] for r in ok) / len(ok)),
-    "completion_tokens": round(sum(r["completion_tokens"] for r in ok) / len(ok)),
-    "latency_p50_ms": round(median(latency)),
-    "latency_p95_ms": sorted(latency)[max(0, round(len(latency) * 0.95) - 1)],
-    "search_ms": round(sum(r["search_ms"] + r["rerank_ms"] for r in ok) / len(ok)),
-    "llm_ms": round(sum(r["llm_ms"] for r in ok) / len(ok)),
+    "prompt_tokens": avg("prompt_tokens"),
+    "completion_tokens": avg("completion_tokens"),
+    "latency_p50_ms": round(median(latency)) if latency else None,
+    "latency_p95_ms": latency[max(0, round(len(latency) * 0.95) - 1)] if latency else None,
+    "search_ms": round(sum(r["search_ms"] + r["rerank_ms"] for r in ok) / len(ok)) if ok else None,
+    "llm_ms": avg("llm_ms"),
     "fail_ids": [r["id"] for r in rows if r["correct"] != "PASS"],
 }
 out_path = Path("results") / f"ch09_run_{args.run}.json"
 out_path.write_text(json.dumps({"summary": summary, "rows": rows}, ensure_ascii=False, indent=2), encoding="utf-8")
 print(json.dumps(summary, ensure_ascii=False, indent=2))
+if not ok:  # 모든 문항이 오류면 결과를 저장한 뒤 실패로 끝냅니다 (CI 가 이 실행을 성공으로 보지 않게)
+    sys.exit(1)

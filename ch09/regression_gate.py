@@ -26,9 +26,9 @@ def load(run: str, smoke: bool) -> dict:
             "pass_rate": sum(r["correct"] == "PASS" for r in rows) / len(rows),
             "errors": len(rows) - len(ok),
             "tokens": sum(r["prompt_tokens"] + r["completion_tokens"] for r in ok) / max(len(ok), 1),
-            # ch09.policy_check 를 실행한 결과에만 있습니다
-            "policy": [r["id"] for r in rows if r.get("policy") is not None and r["policy"] < 0.7]
-            if all("policy" in r for r in ok) else None}
+            # 정책 점수는 ch09.policy_check 를 실행한 결과에만 있습니다
+            "policy": [r["id"] for r in ok if r.get("policy") is not None and r["policy"] < 0.7],
+            "policy_missing": sum(r.get("policy") is None for r in ok)}
 
 
 parser = argparse.ArgumentParser()
@@ -53,10 +53,14 @@ gates = [
     ("평균 토큰", f"{candidate['tokens']:.0f} (기준선 {base_tokens:.0f})",
      candidate["tokens"] <= base_tokens * (1 + MAX_TOKEN_INCREASE)),
 ]
-if candidate["policy"] is not None and all(b["policy"] is not None for b in baselines):
+if all(b["policy_missing"] == 0 for b in baselines):  # 기준선에 정책 점수가 있으면 후보에도 있어야 합니다
     base_max = max(len(b["policy"]) for b in baselines)
-    gates.append(("정책 위반", f"{len(candidate['policy'])}개 {candidate['policy']} (기준선 최대 {base_max}개)",
-                  len(candidate["policy"]) <= base_max + EXTRA_POLICY_VIOLATIONS))
+    if candidate["policy_missing"]:  # 점수가 없으면 통과로 보지 않고 차단합니다
+        gates.append(("정책 위반", f"정책 점수가 없는 문항 {candidate['policy_missing']}개 "
+                                   "(ch09.policy_check 를 먼저 실행하세요)", False))
+    else:
+        gates.append(("정책 위반", f"{len(candidate['policy'])}개 {candidate['policy']} (기준선 최대 {base_max}개)",
+                      len(candidate["policy"]) <= base_max + EXTRA_POLICY_VIOLATIONS))
 print(f"[{args.candidate}]{' 스모크 10문항' * args.smoke}")
 for name, detail, passed in gates:
     print(f"  {'통과' if passed else '차단'}  {name:<6} {detail}")

@@ -29,6 +29,8 @@ def call_judge(system: str, user: str, required: dict, max_retries: int = 3) -> 
         text = response.choices[0].message.content or ""
         try:
             result = json.loads(text)
+            if not isinstance(result, dict):  # 123, null, [] 도 올바른 JSON 이지만 판정 결과가 아닙니다
+                raise ValueError(f"JSON 객체가 아님: {type(result).__name__}")
             for key, allowed in required.items():
                 if key not in result:
                     raise ValueError(f"'{key}' 항목이 없음")
