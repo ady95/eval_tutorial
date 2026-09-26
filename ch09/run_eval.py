@@ -29,10 +29,16 @@ args = parser.parse_args()
 config = RagConfig(chunk_size=args.chunk_size, top_k=args.top_k, rerank=args.rerank, prompt=args.prompt,
                    base_url=args.base_url, **({"model": args.model} if args.model else {}))
 questions = [q for q in load_eval_set() if not args.smoke or q["id"] in SMOKE_IDS]
-app = RagApp(config)
+try:
+    app = RagApp(config)
+except Exception as e:  # 임베딩 서버 연결 같은 준비 단계의 실패도 문항별 오류로 남겨 결과 파일을 만듭니다
+    app, setup_error = None, f"준비 실패 {type(e).__name__}: {e}"
 
 rows = []
 for q in questions:
+    if app is None:
+        rows.append({**q, "answer": None, "correct": "ERROR", "reason": setup_error})
+        continue
     try:
         out = app.answer(q["question"])
     except Exception as e:  # 운영에서처럼 호출 실패도 결과로 남깁니다 (Reliability)
