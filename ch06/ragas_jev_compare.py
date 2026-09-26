@@ -29,14 +29,27 @@ def prepare() -> None:
     print(f"{len(rows)}문항 → {INPUT}")
 
 
-def jev_scores(run: str) -> dict:
+def load_run(run: str) -> list[dict]:
+    lines = (Path("results") / f"ch06_jev_{run}.jsonl").read_text(encoding="utf-8").splitlines()
+    return [json.loads(line) for line in lines]
+
+
+def jev_scores(rows: list[dict]) -> dict:
     """RAGAS-JEV 결과에서 문항별 점수를 꺼냅니다. 점수는 retrieval / generation 아래에 있습니다.
     기본 점수 말고도 context_precision_ap(순위 가중 AP) 같은 변형 점수가 함께 들어 있습니다."""
-    scores = {}
-    for line in (Path("results") / f"ch06_jev_{run}.jsonl").read_text(encoding="utf-8").splitlines():
-        r = json.loads(line)
-        scores[int(r["sample_id"])] = {**(r.get("retrieval") or {}), **(r.get("generation") or {})}
-    return scores
+    return {int(r["sample_id"]): {**(r.get("retrieval") or {}), **(r.get("generation") or {})} for r in rows}
+
+
+def check_run(rows: list[dict]) -> None:
+    """종료 코드가 0이어도 확인할 것: 오류, 비어 있는 지표, 재검토 실패, 사람 검토 표시."""
+    status = {}
+    for r in rows:
+        status[r["status"]] = status.get(r["status"], 0) + 1
+    errors = [int(r["sample_id"]) for r in rows if r.get("error")]
+    failures = sum((r.get("escalation") or {}).get("routing_failures", 0) for r in rows)
+    review = [f"{r['sample_id']}번 {u['metric']}" for r in rows for u in r["units"]
+              if (u.get("decision") or {}).get("needs_human_review")]
+    print(f"점검: 상태 {status}, 오류 문항 {errors}, 재검토 실패 {failures}건, 사람 검토 표시 {review}")
 
 
 def rule_ap(row: dict) -> float:
@@ -51,14 +64,17 @@ def rule_ap(row: dict) -> float:
 
 def compare(run: str) -> None:
     ragas = {r["id"]: r for r in json.loads(RAGAS.read_text(encoding="utf-8"))}
-    jev = jev_scores(run)
-    print(f"RAGAS-JEV {run} · {len(jev)}문항\n")
-    print(f"  {'지표':<18} RAGAS 평균  RAGAS-JEV 평균  순위 상관 ρ  0.5 이상 차이 나는 문항")
+    rows = load_run(run)
+    jev = jev_scores(rows)
+    print(f"RAGAS-JEV {run} · {len(jev)}문항")
+    check_run(rows)
+    # 점수가 빈(None) 문항은 빼고 평균을 내므로, 지표마다 문항 수 n 이 다를 수 있습니다
+    print(f"\n  {'지표':<18} n   RAGAS 평균  RAGAS-JEV 평균  순위 상관 ρ  0.5 이상 차이 나는 문항")
     for name, ragas_name in PAIRS.items():
         pairs = [(i, jev[i][name], ragas[i]["ragas"][ragas_name]) for i in sorted(jev)
                  if jev[i][name] is not None and ragas[i]["ragas"][ragas_name] is not None]
         far = [i for i, a, b in pairs if abs(a - b) >= 0.5]
-        print(f"  {name:<18} {mean(b for _, _, b in pairs):.3f}       {mean(a for _, a, _ in pairs):.3f}"
+        print(f"  {name:<18} {len(pairs):<3} {mean(b for _, _, b in pairs):.3f}       {mean(a for _, a, _ in pairs):.3f}"
               f"           {spearman([a for _, a, _ in pairs], [b for _, _, b in pairs]):.3f}      {far}")
 
     # 어느 쪽이 맞는지는 서로 비교해서는 알 수 없으므로, 규칙으로 계산한 기준과 대조합니다 (답이 규정에 있는 문항만)
