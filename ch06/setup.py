@@ -2,7 +2,7 @@
 
 .env 에서 읽는 값은 01-2, 02-2 와 같습니다. 추가로 다음 값을 쓸 수 있습니다.
   OPENAI_DROP_PARAMS  (선택) 서버가 받지 않는 파라미터를 쉼표로 적으면 요청에서 뺍니다.
-                      예) temperature,top_p   — OpenAI 공식 API에서는 비워 둡니다.
+                      예) temperature,top_p   — .env.example 기본값. 06-1 대로 OpenAI 공식 API에서도 그대로 둡니다.
 """
 import os
 
