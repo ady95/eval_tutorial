@@ -7,6 +7,7 @@
 __pycache__/
 *.py[cod]
 .venv/
+.venv-jev/
 venv/
 .ipynb_checkpoints/
 .pytest_cache/
@@ -23,3 +24,6 @@ Thumbs.db
 # DeepEval 캐시·실행 기록
 .deepeval/
 .deepeval_telemetry.txt
+
+# RAGAS-JEV 캐시 (06-7)
+.cache/

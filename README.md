@@ -33,6 +33,7 @@ python -m ch01.check_env
 | `ch08/` | 08장 Agent 평가 (도구 3종 Agent와 Trace, 도구·경로·계획 지표, DeepEval Agent 지표) |
 | `ch09/` | 09장 Evaluation Engineering (합성 평가셋, 회귀 평가와 배포 게이트, 실패 분류, 품질·비용·지연 비교). CI 예시는 `.github/workflows/llm-eval.yml` (수동 실행 전용) |
 | `ch10/` | 10장 실전 프로젝트 (RAG 평가 시스템과 개선 전후 비교, Agent 평가 시스템과 회귀 평가셋, 설정 파일로 정의하는 평가 파이프라인) |
+| Jev 실습 | 04-5 `ch04/jev_judge.py`, 06-7 `ch06/ragas_jev_compare.py`, 07-4 `ch07/deepeval_jev.py`. 의존성이 06장 RAGAS와 충돌하므로 별도 가상환경에서 실행: `python -m venv .venv-jev` 후 `pip install "typesafe-sdk==0.7.1" "ragas-jev==0.2.0" "deepeval==4.2.6" openai python-dotenv numpy`. `.env`에 `TYPESAFE_API_KEY` 필요 |
 | `data/` | 05장부터 쓰는 공통 실습 데이터: 가상 회사 누리솔 사내 규정 23개(`docs/`), 평가셋 42문항(`eval_set.json`), Agent 평가 과제 20개(`agent_tasks.json`), 가상 날씨 예보(`weather.json`) |
 
 장이 진행되면서 폴더가 추가됩니다.
