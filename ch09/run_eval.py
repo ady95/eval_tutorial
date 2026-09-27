@@ -52,7 +52,8 @@ for q in questions:
     found = {c["doc_id"] for c in out["retrieved"]}
     rows.append({**q, **out, "correct": judged.get("result", "ERROR"), "reason": judged.get("reason", judged.get("error")),
                  "doc_recall": sum(d in found for d in q["docs"]) / len(q["docs"]) if q["docs"] else None})
-    print(f"  {q['id']:2d} {rows[-1]['correct']:<5} {out['search_ms'] + out['rerank_ms'] + out['llm_ms']:6d}ms  {out['answer'][:50]}")
+    total_ms = out["search_ms"] + out["rerank_ms"] + out["llm_ms"]
+    print(f"  {q['id']:2d} {rows[-1]['correct']:<5} {total_ms:6d}ms  {out['answer'][:50]}")
 
 ok = [r for r in rows if r["correct"] != "ERROR"]
 latency = sorted(r["search_ms"] + r["rerank_ms"] + r["llm_ms"] for r in ok)
